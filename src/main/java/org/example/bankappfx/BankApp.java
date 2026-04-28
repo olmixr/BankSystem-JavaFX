@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class HelloApplication extends Application {
+public class BankApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         Text BankAccountText = new Text("BANK ACCOUNT APP");
