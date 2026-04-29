@@ -10,10 +10,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 
-public class BankApp extends Application {
+public class BankApp extends Application  {
+
+    public BankService service = new BankService();
+
     @Override
     public void start(Stage stage) throws IOException {
-        Text BankAccountText = new Text("BANK ACCOUNT APP");
+        Text BankAccountText = new Text("BANKING APP");
 
         Button CreateAccount = new Button("Create account");
         Button DeleteAccount = new Button("Delete account");
@@ -30,9 +33,19 @@ public class BankApp extends Application {
         Button Exit = new Button("Exit");
 
 
+        CreateAccount.setOnAction(event -> {
+           
+        });
+
+
+
+        Exit.setOnAction(event -> {
+            stage.close();
+        });
+
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(BankAccountText,CreateAccount,DeleteAccount,DepositAccount,WithDrawAccount,TransferMoneyAccount,ShowAllAccounts,EndMonth,SaveDataUsers,GetDataUsers,SearchAccount,AutoSaveData,AutoLoadData);
+        vbox.getChildren().addAll(BankAccountText,CreateAccount,DeleteAccount,DepositAccount,WithDrawAccount,TransferMoneyAccount,ShowAllAccounts,EndMonth,SaveDataUsers,GetDataUsers,SearchAccount,AutoSaveData,AutoLoadData,Exit);
 
         Scene scene = new Scene(vbox,400,600);
         stage.setTitle("1");
