@@ -3,8 +3,94 @@ import java.util.ArrayList;
 
 public class BankService {
 
-    ArrayList<BankAccounts> accounts = new ArrayList<BankAccounts>();
+    private final ArrayList<BankAccounts> accounts;
+
+    public BankService(){
+      accounts = new ArrayList<BankAccounts>();
+    }
+
+    public void createSavingsAccount(int accountNumber, String ownerName, int interestRate) {
+        validateAccountData(accountNumber, ownerName);
+        accounts.add(new BankSavingAccount(accountNumber, ownerName, 0, interestRate));
+    }
+
+    public void createCreditAccount(int accountNumber, String ownerName, int creditLimit, int monthlyFee) {
+        validateAccountData(accountNumber, ownerName);
+        accounts.add(new BankCreditAccount(accountNumber, ownerName, 0, creditLimit, monthlyFee));
+    }
+
+    public int getAccountsCount() {
+        return accounts.size();
+    }
+
+    public boolean accountNumberExists(int accountNumber) {
+        for (BankAccounts account : accounts) {
+            if (account.getAccountNumber() == accountNumber) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void validateAccountData(int accountNumber, String ownerName) {
+        if (accountNumber <= 0) {
+            throw new IllegalArgumentException("Account number must be greater than 0.");
+        }
+        if (ownerName == null || ownerName.isBlank()) {
+            throw new IllegalArgumentException("Owner name cannot be empty.");
+        }
+        if (accountNumberExists(accountNumber)) {
+            throw new IllegalArgumentException("Account with this number already exists.");
+        }
+    }
+
+
+//    private BankAccounts findAcccountByNumber(int index){
+//        for (int i = 0; i < accounts.size() ; i++){
+//            if (accounts.get(i) !=null && accounts.get(i) == index){
+//                return  accounts.get(i);
+//            }
+//        }
+//    }
+
+//    public boolean deleteAccount(int index){
+//
+//
+//    }
+
+
+    //    private static BankAccount findAccountByNumber(int inputnumber) {
+//        for (int i = 0; i < accounts.length; i++) {
+//            if ( accounts[i] !=null && accounts[i].getAccountNumber() == inputnumber) {
+//                return accounts[i];
+//            }
+//        }
+//        return null;
+//    }
 ////
+
+
+    //    public static boolean deleteAccount(){
+//        System.out.println("Account number to be deleted: ");
+//        int deleteAccount = scan.nextInt();
+//        BankAccount accountDel = findAccountByNumber(deleteAccount);
+//        if (accountDel == null) {
+//            System.out.println("That account doesn't exist!"+"\n The account has not been deleted!");
+//            return false;
+//        } else {
+//            for (int i = 0; i < accounts.length; i++) {
+//                if (accountDel == accounts[i]){
+//                    accounts[i] = null;
+//                    System.out.println("Your account has been successfully deleted!");
+//                    saveDataIfEnabled();
+//                    return true;
+//                }
+//            }
+//        } return false;
+//    }
+//
+
+
 //    private static int getFreePozisin() {
 //        for (int i = 0; i < accounts.length; i++) {
 //            if (accounts[i] == null) {
@@ -14,15 +100,7 @@ public class BankService {
 //        return -1;
 //    }
 //
-//    private static BankAccount findAccountByNumber(int inputnumber) {
-//        for (int i = 0; i < accounts.length; i++) {
-//            if ( accounts[i] !=null && accounts[i].getAccountNumber() == inputnumber) {
-//                return accounts[i];
-//            }
-//        }
-//        return null;
-//    }
-////
+
 //    public static void getInfoAllAccount() {
 //        boolean hasAccount = false;
 //
@@ -185,25 +263,7 @@ public class BankService {
 //
 //    }
 //
-//    public static boolean deleteAccount(){
-//        System.out.println("Account number to be deleted: ");
-//        int deleteAccount = scan.nextInt();
-//        BankAccount accountDel = findAccountByNumber(deleteAccount);
-//        if (accountDel == null) {
-//            System.out.println("That account doesn't exist!"+"\n The account has not been deleted!");
-//            return false;
-//        } else {
-//            for (int i = 0; i < accounts.length; i++) {
-//                if (accountDel == accounts[i]){
-//                    accounts[i] = null;
-//                    System.out.println("Your account has been successfully deleted!");
-//                    saveDataIfEnabled();
-//                    return true;
-//                }
-//            }
-//        } return false;
-//    }
-//
+
 //    public static void saveData() {
 //        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(SAVEFILENAME))) {
 //            oos.writeObject(accounts);

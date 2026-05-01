@@ -3,9 +3,15 @@ package org.example.bankappfx;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -31,13 +37,151 @@ public class BankApp extends Application  {
         Button AutoSaveData = new Button("Auto save data"/* Тут должно быть True or False значение*/);
         Button AutoLoadData = new Button("Auto load data"/* Тут должно быть True or False значение попозже сделать*/);
         Button Exit = new Button("Exit");
-
+        Separator separator = new Separator();
+        Separator separator1 = new Separator();
 
         CreateAccount.setOnAction(event -> {
-           
+            Stage createStage = new Stage();
+            createStage.initOwner(stage);
+            createStage.initModality(Modality.APPLICATION_MODAL);
+            createStage.setTitle("Create account");
+
+            Text textAccount = new Text("Select the type of account you want to create: ");
+
+            ComboBox<String> comboBox = new ComboBox<>();
+            comboBox.getItems().addAll("Savings Account", "Credit account");
+            comboBox.setValue("Savings Account");
+
+            Text accountNumberText = new Text("Account number: ");
+
+            TextField accountNumber = new TextField();
+            accountNumber.setPromptText("Enter number");
+            accountNumber.setMaxWidth(100);
+
+            Text ownerNameText = new Text("Owner name: ");
+
+            TextField ownerName = new TextField();
+            ownerName.setPromptText("Enter text");
+            ownerName.setMaxWidth(100);
+
+
+            Text depositInterestText = new Text("Deposit interest rate: ");
+
+            TextField depositInterest = new TextField();
+            depositInterest.setPromptText("Enter number");
+            depositInterest.setMaxWidth(100);
+
+            Text monthlyFeeText = new Text("Monthly fee: ");
+
+            TextField monthlyFee = new TextField();
+            monthlyFee.setPromptText("Enter number");
+            monthlyFee.setMaxWidth(100);
+
+            monthlyFeeText.setVisible(false);
+            monthlyFeeText.setManaged(false);
+            monthlyFee.setVisible(false);
+            monthlyFee.setManaged(false);
+
+            comboBox.setOnAction(e -> updateAccountFields(
+                    comboBox.getValue(),
+                    depositInterestText,
+                    depositInterest,
+                    monthlyFeeText,
+                    monthlyFee
+            ));
+
+
+            Button submit = new Button("OK");
+            Button cansel = new Button("CANSEL");
+
+
+            submit.setOnAction(event1 -> {
+                String accountType = comboBox.getValue();
+                String accountNumberValue = accountNumber.getText().trim();
+                String ownerNameValue = ownerName.getText().trim();
+                String firstValue = depositInterest.getText().trim();
+                String secondValue = monthlyFee.getText().trim();
+
+                boolean isCreditAccount = "Credit account".equals(accountType);
+                boolean hasEmptyField = accountType == null
+                        || accountNumberValue.isEmpty()
+                        || ownerNameValue.isEmpty()
+                        || firstValue.isEmpty()
+                        || (isCreditAccount && secondValue.isEmpty());
+
+                if (hasEmptyField) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int accountNumberParsed = Integer.parseInt(accountNumberValue);
+
+                    if ("Savings Account".equals(accountType)) {
+                        int interestRate = Integer.parseInt(firstValue);
+                        service.createSavingsAccount(accountNumberParsed, ownerNameValue, interestRate);
+                    } else if ("Credit account".equals(accountType)) {
+                        int creditLimit = Integer.parseInt(firstValue);
+                        int monthlyFeeValue = Integer.parseInt(secondValue);
+                        service.createCreditAccount(accountNumberParsed, ownerNameValue, creditLimit, monthlyFeeValue);
+                    }
+
+                    showAlert(Alert.AlertType.INFORMATION,
+                            "Account created. Total accounts: " + service.getAccountsCount());
+                    createStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Number fields must contain only digits.");
+                } catch (IllegalArgumentException ex) {
+                    showAlert(Alert.AlertType.ERROR, ex.getMessage());
+                }
+            });
+
+
+
+
+
+
+            cansel.setOnAction(e -> createStage.close());
+
+            HBox buttonsBox = new HBox(10, submit, cansel);
+            buttonsBox.setAlignment(Pos.CENTER);
+
+
+            VBox dialogLayout = new VBox(
+                    10,
+                    textAccount,
+                    comboBox,
+                    accountNumberText,
+                    accountNumber,
+                    ownerNameText,
+                    ownerName,
+                    depositInterestText,
+                    depositInterest,
+                    monthlyFeeText,
+                    monthlyFee,
+                    buttonsBox
+            );
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene dialogScene = new Scene(dialogLayout, 350, 320);
+            createStage.setScene(dialogScene);
+            createStage.showAndWait();
+
         });
 
 
+//        DeleteAccount.setOnAction(event1 -> {
+//            String ownerNameValue = ownerName.getText().trim();
+//            if (!ownerNameValue.isEmpty()){
+//                int accountNumberParsed = Integer.parseInt(ownerNameValue);
+//                service.deleteAccount(accountNumberParsed);
+//
+//            }else {
+//                showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
+//                return;
+//            }
+//
+//        });
 
         Exit.setOnAction(event -> {
             stage.close();
@@ -45,15 +189,46 @@ public class BankApp extends Application  {
 
         VBox vbox = new VBox(10);
         vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(BankAccountText,CreateAccount,DeleteAccount,DepositAccount,WithDrawAccount,TransferMoneyAccount,ShowAllAccounts,EndMonth,SaveDataUsers,GetDataUsers,SearchAccount,AutoSaveData,AutoLoadData,Exit);
+        vbox.getChildren().addAll(BankAccountText,CreateAccount,DeleteAccount,DepositAccount,WithDrawAccount,TransferMoneyAccount,ShowAllAccounts,EndMonth,separator,SaveDataUsers,GetDataUsers,SearchAccount,AutoSaveData,AutoLoadData,separator1,Exit);
 
         Scene scene = new Scene(vbox,400,600);
-        stage.setTitle("1");
+        stage.setTitle("BANK SYSTEM");
         stage.setScene(scene);
         stage.show();
     }
     
     public static void main(String[] args) {
         launch();
+    }
+
+    private void updateAccountFields(
+            String accountType,
+            Text firstLabel,
+            TextField firstField,
+            Text secondLabel,
+            TextField secondField
+    ) {
+        boolean isCreditAccount = "Credit account".equals(accountType);
+
+        if (isCreditAccount) {
+            firstLabel.setText("Credit limit: ");
+            firstField.setPromptText("Enter number");
+        } else {
+            firstLabel.setText("Deposit interest rate: ");
+            firstField.setPromptText("Enter number");
+            secondField.clear();
+        }
+
+        secondLabel.setVisible(isCreditAccount);
+        secondLabel.setManaged(isCreditAccount);
+        secondField.setVisible(isCreditAccount);
+        secondField.setManaged(isCreditAccount);
+    }
+
+    private void showAlert(Alert.AlertType alertType, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
