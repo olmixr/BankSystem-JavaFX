@@ -45,13 +45,15 @@ public class BankService {
     }
 
 
-//    private BankAccounts findAcccountByNumber(int index){
-//        for (int i = 0; i < accounts.size() ; i++){
-//            if (accounts.get(i) !=null && accounts.get(i) == index){
-//                return  accounts.get(i);
-//            }
-//        }
-//    }
+
+    public BankAccounts findAcccountByNumber(int numberAccount){
+        for (int i = 0; i < accounts.size() ; i++){
+            if (accounts.get(i) !=null && accounts.get(i).getAccountNumber() == numberAccount){
+                return  accounts.get(i);
+            }
+        }
+        return null;
+    }
 
 //    public boolean deleteAccount(int index){
 //

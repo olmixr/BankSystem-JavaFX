@@ -138,9 +138,6 @@ public class BankApp extends Application  {
 
 
 
-
-
-
             cansel.setOnAction(e -> createStage.close());
 
             HBox buttonsBox = new HBox(10, submit, cansel);
@@ -170,18 +167,64 @@ public class BankApp extends Application  {
         });
 
 
-//        DeleteAccount.setOnAction(event1 -> {
-//            String ownerNameValue = ownerName.getText().trim();
-//            if (!ownerNameValue.isEmpty()){
-//                int accountNumberParsed = Integer.parseInt(ownerNameValue);
-//                service.deleteAccount(accountNumberParsed);
-//
-//            }else {
-//                showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
-//                return;
-//            }
-//
-//        });
+        DeleteAccount.setOnAction(event1 -> {
+           Stage deleteStage = new Stage();
+           deleteStage.initOwner(stage);
+           deleteStage.initModality(Modality.APPLICATION_MODAL);
+           deleteStage.setTitle("Delete account");
+
+
+            Text TextDeleteAccount = new Text("Delete account: ");
+
+            TextField accountNumberText = new TextField();
+            accountNumberText.setPromptText("Enter number");
+
+            Button deleteButton = new Button("DELETE");
+            Button canselButton = new Button("CANSEL");
+
+
+            deleteButton.setOnAction(event -> {
+                String accountNumber = accountNumberText.getText().trim();
+                if (accountNumber.isEmpty()){
+                    showAlert(Alert.AlertType.ERROR,"Fill in end account number");
+                    return;
+                }
+                try {
+                    int accountNumberParsed = Integer.parseInt(accountNumber);
+                    if (accountNumberParsed<=0){
+                        showAlert(Alert.AlertType.ERROR,"Номер аккаунта должен быть больше нуля");
+                        return;
+                    }
+                    BankAccounts bankAccounts = service.findAcccountByNumber(accountNumberParsed);
+                    if (bankAccounts == null){
+                        showAlert(Alert.AlertType.ERROR,"Этот аккаунт не существует и мы не можем его удалить");
+                        return;
+                    }
+
+                    Alert confirmationAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmationAlert.initOwner(deleteStage);
+                    confirmationAlert.setTitle("Confirm delete");
+                    confirmationAlert.setHeaderText("Delete this account?");
+                    confirmationAlert.setContentText(buildDeleteConfirmationText(bankAccounts));
+                    confirmationAlert.showAndWait();
+                }catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Аккаунт должен содержать только цифры ");
+                }
+
+            });
+
+            canselButton.setOnAction(event -> {
+                stage.close();
+            });
+
+            HBox hbox = new HBox(10,deleteButton,canselButton);
+            VBox vbox = new VBox(10, TextDeleteAccount,accountNumberText,hbox);
+            Scene deleteScene = new Scene(vbox,340,170);
+
+            deleteStage.setScene(deleteScene);
+            deleteStage.showAndWait();
+
+        });
 
         Exit.setOnAction(event -> {
             stage.close();
@@ -231,4 +274,19 @@ public class BankApp extends Application  {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
+    private String buildDeleteConfirmationText(BankAccounts account) {
+        String accountType = account instanceof BankSavingAccount
+                ? "Savings Account"
+                : "Credit account";
+
+        return "Type: " + accountType
+                + "\nAccount number: " + account.getAccountNumber()
+                + "\nOwner: " + account.getOwnerName()
+                + "\nBalance: " + String.format("%.2f", account.getBalance());
+
+    }
+
+
+
 }
