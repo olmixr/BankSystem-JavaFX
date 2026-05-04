@@ -45,15 +45,32 @@ public class BankService {
     }
 
 
-
-    public BankAccounts findAcccountByNumber(int numberAccount){
+    public BankAccounts findAccountByNumber(int numberAccount){
         for (int i = 0; i < accounts.size() ; i++){
             if (accounts.get(i) !=null && accounts.get(i).getAccountNumber() == numberAccount){
-                return  accounts.get(i);
+                return accounts.get(i);
             }
         }
         return null;
     }
+
+    public void deleteAccountToNumber(int numberAccount){
+        for (int i = 0; i < accounts.size(); i++) {
+            if (numberAccount == accounts.get(i).getAccountNumber()){
+                accounts.remove(i);
+            }
+        }
+
+    }
+
+//    public void depositMoney(int number,double value){
+//        for (int i = 0; i < accounts.size(); i++) {
+//            if (number == accounts.get(i)){
+//
+//            }
+//        }
+//
+//    }
 
 //    public boolean deleteAccount(int index){
 //
