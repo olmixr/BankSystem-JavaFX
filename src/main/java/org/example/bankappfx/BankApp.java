@@ -3,7 +3,12 @@ package org.example.bankappfx;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -13,98 +18,91 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.util.Optional;
 
-public class BankApp extends Application  {
+public class BankApp extends Application {
 
-    public BankService service = new BankService();
+    private final BankService service = new BankService();
 
     @Override
     public void start(Stage stage) throws IOException {
-        Text BankAccountText = new Text("BANKING APP");
+        Text titleText = new Text("BANKING APP");
 
-        Button CreateAccount = new Button("Create account");
-        Button DeleteAccount = new Button("Delete account");
-        Button DepositAccount = new Button("Deposit money");
-        Button WithdrawAccount = new Button("Withdraw money");
-        Button TransferMoneyAccount = new Button("Transfer from - to");
-        Button ShowAllAccounts = new Button("Show all accounts");
-        Button EndMonth = new Button("End of month");
-        Button SaveDataUsers = new Button("Save data Users");
-        Button GetDataUsers = new Button("Get data Users");
-        Button SearchAccount = new Button("Search account");
-        Button AutoSaveData = new Button("Auto save data"/* Тут должно быть True or False значение*/);
-        Button AutoLoadData = new Button("Auto load data"/* Тут должно быть True or False значение попозже сделать*/);
-        Button Exit = new Button("Exit");
-        Separator separator = new Separator();
-        Separator separator1 = new Separator();
+        Button createAccountButton = new Button("Create account");
+        Button deleteAccountButton = new Button("Delete account");
+        Button depositMoneyButton = new Button("Deposit money");
+        Button withdrawMoneyButton = new Button("Withdraw money");
+        Button transferMoneyButton = new Button("Transfer money");
+        Button showAllAccountsButton = new Button("Show all accounts");
+        Button endMonthButton = new Button("End of month");
+        Button saveUserDataButton = new Button("Save user data");
+        Button loadUserDataButton = new Button("Load user data");
+        Button searchAccountButton = new Button("Search account");
+        Button autoSaveDataButton = new Button("Auto save data"); // TODO: show true/false state
+        Button autoLoadDataButton = new Button("Auto load data"); // TODO: show true/false state
+        Button exitButton = new Button("Exit");
+        Separator actionsSeparator = new Separator();
+        Separator footerSeparator = new Separator();
 
-        CreateAccount.setOnAction(event -> {
+        createAccountButton.setOnAction(event -> {
             Stage createStage = new Stage();
             createStage.initOwner(stage);
             createStage.initModality(Modality.APPLICATION_MODAL);
             createStage.setTitle("Create account");
 
-            Text textAccount = new Text("Select the type of account you want to create: ");
+            Text accountTypeText = new Text("Select the type of account you want to create:");
 
-            ComboBox<String> comboBox = new ComboBox<>();
-            comboBox.getItems().addAll("Savings Account", "Credit account");
-            comboBox.setValue("Savings Account");
+            ComboBox<String> accountTypeComboBox = new ComboBox<>();
+            accountTypeComboBox.getItems().addAll("Savings Account", "Credit account");
+            accountTypeComboBox.setValue("Savings Account");
 
-            Text accountNumberText = new Text("Account number: ");
+            Text accountNumberLabel = new Text("Account number:");
+            TextField accountNumberField = new TextField();
+            accountNumberField.setPromptText("Enter number");
+            accountNumberField.setMaxWidth(100);
 
-            TextField accountNumber = new TextField();
-            accountNumber.setPromptText("Enter number");
-            accountNumber.setMaxWidth(100);
+            Text ownerNameLabel = new Text("Owner name:");
+            TextField ownerNameField = new TextField();
+            ownerNameField.setPromptText("Enter text");
+            ownerNameField.setMaxWidth(100);
 
-            Text ownerNameText = new Text("Owner name: ");
+            Text primaryFieldLabel = new Text("Deposit interest rate:");
+            TextField primaryField = new TextField();
+            primaryField.setPromptText("Enter number");
+            primaryField.setMaxWidth(100);
 
-            TextField ownerName = new TextField();
-            ownerName.setPromptText("Enter text");
-            ownerName.setMaxWidth(100);
+            Text monthlyFeeLabel = new Text("Monthly fee:");
+            TextField monthlyFeeField = new TextField();
+            monthlyFeeField.setPromptText("Enter number");
+            monthlyFeeField.setMaxWidth(100);
 
+            monthlyFeeLabel.setVisible(false);
+            monthlyFeeLabel.setManaged(false);
+            monthlyFeeField.setVisible(false);
+            monthlyFeeField.setManaged(false);
 
-            Text depositInterestText = new Text("Deposit interest rate: ");
-
-            TextField depositInterest = new TextField();
-            depositInterest.setPromptText("Enter number");
-            depositInterest.setMaxWidth(100);
-
-            Text monthlyFeeText = new Text("Monthly fee: ");
-
-            TextField monthlyFee = new TextField();
-            monthlyFee.setPromptText("Enter number");
-            monthlyFee.setMaxWidth(100);
-
-            monthlyFeeText.setVisible(false);
-            monthlyFeeText.setManaged(false);
-            monthlyFee.setVisible(false);
-            monthlyFee.setManaged(false);
-
-            comboBox.setOnAction(e -> updateAccountFields(
-                    comboBox.getValue(),
-                    depositInterestText,
-                    depositInterest,
-                    monthlyFeeText,
-                    monthlyFee
+            accountTypeComboBox.setOnAction(e -> updateAccountFields(
+                    accountTypeComboBox.getValue(),
+                    primaryFieldLabel,
+                    primaryField,
+                    monthlyFeeLabel,
+                    monthlyFeeField
             ));
 
+            Button submitButton = new Button("OK");
+            Button cancelButton = new Button("Cancel");
 
-            Button submit = new Button("OK");
-            Button cansel = new Button("CANSEL");
-
-
-            submit.setOnAction(event1 -> {
-                String accountType = comboBox.getValue();
-                String accountNumberValue = accountNumber.getText().trim();
-                String ownerNameValue = ownerName.getText().trim();
-                String firstValue = depositInterest.getText().trim();
-                String secondValue = monthlyFee.getText().trim();
+            submitButton.setOnAction(event1 -> {
+                String accountType = accountTypeComboBox.getValue();
+                String accountNumberValue = accountNumberField.getText().trim();
+                String ownerNameValue = ownerNameField.getText().trim();
+                String primaryValue = primaryField.getText().trim();
+                String monthlyFeeValue = monthlyFeeField.getText().trim();
 
                 boolean isCreditAccount = "Credit account".equals(accountType);
                 boolean hasEmptyField = accountType == null
                         || accountNumberValue.isEmpty()
                         || ownerNameValue.isEmpty()
-                        || firstValue.isEmpty()
-                        || (isCreditAccount && secondValue.isEmpty());
+                        || primaryValue.isEmpty()
+                        || (isCreditAccount && monthlyFeeValue.isEmpty());
 
                 if (hasEmptyField) {
                     showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
@@ -112,19 +110,21 @@ public class BankApp extends Application  {
                 }
 
                 try {
-                    int accountNumberParsed = Integer.parseInt(accountNumberValue);
+                    int accountNumber = Integer.parseInt(accountNumberValue);
 
                     if ("Savings Account".equals(accountType)) {
-                        int interestRate = Integer.parseInt(firstValue);
-                        service.createSavingsAccount(accountNumberParsed, ownerNameValue, interestRate);
+                        int interestRate = Integer.parseInt(primaryValue);
+                        service.createSavingsAccount(accountNumber, ownerNameValue, interestRate);
                     } else if ("Credit account".equals(accountType)) {
-                        int creditLimit = Integer.parseInt(firstValue);
-                        int monthlyFeeValue = Integer.parseInt(secondValue);
-                        service.createCreditAccount(accountNumberParsed, ownerNameValue, creditLimit, monthlyFeeValue);
+                        int creditLimit = Integer.parseInt(primaryValue);
+                        int fee = Integer.parseInt(monthlyFeeValue);
+                        service.createCreditAccount(accountNumber, ownerNameValue, creditLimit, fee);
                     }
 
-                    showAlert(Alert.AlertType.INFORMATION,
-                            "Account created. Total accounts: " + service.getAccountsCount());
+                    showAlert(
+                            Alert.AlertType.INFORMATION,
+                            "Account created. Total accounts: " + service.getAccountsCount()
+                    );
                     createStage.close();
                 } catch (NumberFormatException ex) {
                     showAlert(Alert.AlertType.ERROR, "Number fields must contain only digits.");
@@ -133,26 +133,23 @@ public class BankApp extends Application  {
                 }
             });
 
+            cancelButton.setOnAction(e -> createStage.close());
 
-
-            cansel.setOnAction(e -> createStage.close());
-
-            HBox buttonsBox = new HBox(10, submit, cansel);
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
             buttonsBox.setAlignment(Pos.CENTER);
-
 
             VBox dialogLayout = new VBox(
                     10,
-                    textAccount,
-                    comboBox,
-                    accountNumberText,
-                    accountNumber,
-                    ownerNameText,
-                    ownerName,
-                    depositInterestText,
-                    depositInterest,
-                    monthlyFeeText,
-                    monthlyFee,
+                    accountTypeText,
+                    accountTypeComboBox,
+                    accountNumberLabel,
+                    accountNumberField,
+                    ownerNameLabel,
+                    ownerNameField,
+                    primaryFieldLabel,
+                    primaryField,
+                    monthlyFeeLabel,
+                    monthlyFeeField,
                     buttonsBox
             );
             dialogLayout.setAlignment(Pos.CENTER);
@@ -160,42 +157,39 @@ public class BankApp extends Application  {
             Scene dialogScene = new Scene(dialogLayout, 350, 320);
             createStage.setScene(dialogScene);
             createStage.showAndWait();
-
         });
 
+        deleteAccountButton.setOnAction(event -> {
+            Stage deleteStage = new Stage();
+            deleteStage.initOwner(stage);
+            deleteStage.initModality(Modality.APPLICATION_MODAL);
+            deleteStage.setTitle("Delete account");
 
-        DeleteAccount.setOnAction(event1 -> {
-           Stage deleteStage = new Stage();
-           deleteStage.initOwner(stage);
-           deleteStage.initModality(Modality.APPLICATION_MODAL);
-           deleteStage.setTitle("Delete");
+            Text accountNumberLabel = new Text("Delete account number:");
+            TextField accountNumberField = new TextField();
+            accountNumberField.setPromptText("Enter number");
+            accountNumberField.setMaxWidth(140);
 
+            Button deleteButton = new Button("Delete");
+            Button cancelButton = new Button("Cancel");
 
-            Text TextDeleteAccount = new Text("Delete account number: ");
-
-            TextField accountNumberText = new TextField();
-            accountNumberText.setPromptText("Enter number");
-            accountNumberText.setMaxWidth(140);
-
-            Button deleteButton = new Button("DELETE");
-            Button canselButton = new Button("CANSEL");
-
-
-            deleteButton.setOnAction(event -> {
-                String accountNumber = accountNumberText.getText().trim();
-                if (accountNumber.isEmpty()){
-                    showAlert(Alert.AlertType.ERROR,"Fill in end account number");
+            deleteButton.setOnAction(event1 -> {
+                String accountNumberValue = accountNumberField.getText().trim();
+                if (accountNumberValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Enter an account number.");
                     return;
                 }
+
                 try {
-                    int accountNumberParsed = Integer.parseInt(accountNumber);
-                    if (accountNumberParsed<=0){
-                        showAlert(Alert.AlertType.ERROR,"Номер аккаунта должен быть больше нуля");
+                    int accountNumber = Integer.parseInt(accountNumberValue);
+                    if (accountNumber <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number must be greater than zero.");
                         return;
                     }
-                    BankAccounts bankAccounts = service.findAccountByNumber(accountNumberParsed);
-                    if (bankAccounts == null){
-                        showAlert(Alert.AlertType.ERROR,"Этот аккаунт не существует и мы не можем его удалить");
+
+                    BankAccounts account = service.findAccountByNumber(accountNumber);
+                    if (account == null) {
+                        showAlert(Alert.AlertType.ERROR, "This account does not exist and cannot be deleted.");
                         return;
                     }
 
@@ -203,210 +197,193 @@ public class BankApp extends Application  {
                     confirmationAlert.initOwner(deleteStage);
                     confirmationAlert.setTitle("Confirm delete");
                     confirmationAlert.setHeaderText("Delete this account?");
-                    confirmationAlert.setContentText(buildDeleteConfirmationText(bankAccounts));
-//                    confirmationAlert.showAndWait();//Добавить удаление или проверить если удалили аккаунт
+                    confirmationAlert.setContentText(buildDeleteConfirmationText(account));
 
                     Optional<ButtonType> result = confirmationAlert.showAndWait();
-
                     if (result.isPresent() && result.get() == ButtonType.OK) {
-                        service.deleteAccountToNumber(accountNumberParsed);
-                        showAlert(Alert.AlertType.INFORMATION,"Account delete!");
+                        service.deleteAccountToNumber(accountNumber);
+                        showAlert(Alert.AlertType.INFORMATION, "Account deleted.");
+                        deleteStage.close();
                     } else {
-                        showAlert(Alert.AlertType.ERROR, "Account not deleted! ");
+                        showAlert(Alert.AlertType.ERROR, "Account was not deleted.");
                     }
-
-                }catch (NumberFormatException ex) {
-                    showAlert(Alert.AlertType.ERROR, "Аккаунт должен содержать только цифры ");
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number must contain only digits.");
                 }
             });
 
-            canselButton.setOnAction(event -> {
-                deleteStage.close();
-            });
+            cancelButton.setOnAction(event1 -> deleteStage.close());
 
-            HBox hbox = new HBox(10,deleteButton,canselButton);
-            VBox vbox = new VBox(10, TextDeleteAccount,accountNumberText,hbox);
-            hbox.setAlignment(Pos.CENTER);
-            vbox.setAlignment(Pos.CENTER);
-            Scene deleteScene = new Scene(vbox,340,170);
+            HBox buttonsBox = new HBox(10, deleteButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
 
+            VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene deleteScene = new Scene(dialogLayout, 340, 170);
             deleteStage.setScene(deleteScene);
             deleteStage.showAndWait();
-
         });
 
+        depositMoneyButton.setOnAction(event -> {
+            Stage depositStage = new Stage();
+            depositStage.initOwner(stage);
+            depositStage.initModality(Modality.APPLICATION_MODAL);
+            depositStage.setTitle("Deposit");
 
+            Text accountNumberLabel = new Text("Deposit to account:");
+            TextField accountNumberField = new TextField();
+            accountNumberField.setPromptText("Enter number");
+            accountNumberField.setMaxWidth(140);
 
-        DepositAccount.setOnAction(event -> {
+            Text amountLabel = new Text("How much do you want to deposit?");
+            TextField amountField = new TextField();
+            amountField.setPromptText("Enter amount");
+            amountField.setMaxWidth(140);
 
-            Stage depositScene = new Stage();
-            depositScene.initOwner(stage);
-            depositScene.initModality(Modality.APPLICATION_MODAL);
-            depositScene.setTitle("Deposit");
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
 
-            Text TextDepositNumber = new Text("Deposit to account: ");
-            TextField TextFieldNumber = new TextField();
-            TextFieldNumber.setPromptText("Enter number");
-            TextFieldNumber.setMaxWidth(140);
+            submitButton.setOnAction(event1 -> {
+                String accountNumberValue = accountNumberField.getText().trim();
+                String amountValue = amountField.getText().trim();
 
-
-            Text TextDepositMoney = new Text("How much do you want to transfer?: ");
-            TextField TextFieldDepositMoney = new TextField();
-            TextFieldDepositMoney.setPromptText("Enter money");
-            TextFieldDepositMoney.setMaxWidth(140);
-
-            Button depositButton = new Button("SUBMIT");
-            Button canselButton = new Button("CANSEL");
-
-
-            depositButton.setOnAction(event1 -> {
-
-            String accountNumber = TextFieldNumber.getText().trim();
-            String accountToMoney = TextFieldDepositMoney.getText().trim();
-
-            if (accountNumber.isEmpty() && accountToMoney.isEmpty()){
-                showAlert(Alert.AlertType.ERROR,"Fill in end account number");
-                return;
-            }
-            try {
-                int accountNumberParsed = Integer.parseInt(accountNumber);
-                double accountNumberMoneyParsed = Double.parseDouble(accountToMoney);
-
-                if (accountNumberParsed <=0 || accountNumberMoneyParsed <=0){
-                    showAlert(Alert.AlertType.ERROR,"Поля должны быть больше нуля");
+                if (accountNumberValue.isEmpty() || amountValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
                     return;
                 }
 
-                BankAccounts bankAccounts = service.findAccountByNumber(accountNumberParsed);
-                if (bankAccounts == null){
-                    showAlert(Alert.AlertType.ERROR,"Этот аккаунт не существует");
-                    return;
-                }else {
-                    bankAccounts.deposit(accountNumberMoneyParsed);//Пополнение
-                    showAlert(Alert.AlertType.INFORMATION,"Account deposit!");
-                    depositScene.close();
+                try {
+                    int accountNumber = Integer.parseInt(accountNumberValue);
+                    double amount = Double.parseDouble(amountValue);
 
+                    if (accountNumber <= 0 || amount <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number and amount must be greater than zero.");
+                        return;
+                    }
+
+                    BankAccounts account = service.findAccountByNumber(accountNumber);
+                    if (account == null) {
+                        showAlert(Alert.AlertType.ERROR, "This account does not exist.");
+                        return;
+                    }
+
+                    account.deposit(amount);
+                    showAlert(Alert.AlertType.INFORMATION, "Deposit completed.");
+                    depositStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number and amount must be numeric.");
                 }
-
-            }catch (NumberFormatException ex) {
-                showAlert(Alert.AlertType.ERROR, "Аккаунт должен содержать только цифры ");
-            }
-
-
             });
 
-            canselButton.setOnAction(event1 -> {
-                depositScene.close();
-            });
+            cancelButton.setOnAction(event1 -> depositStage.close());
 
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
 
-            HBox hbox = new HBox(10,depositButton,canselButton);
-            VBox vbox = new VBox(10,TextDepositNumber,TextFieldNumber,TextDepositMoney,TextFieldDepositMoney,hbox);
-            hbox.setAlignment(Pos.CENTER);
-            vbox.setAlignment(Pos.CENTER);
-            Scene deleteScene = new Scene(vbox,340,230);
+            VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
 
-            depositScene.setScene(deleteScene);
-            depositScene.showAndWait();
+            Scene depositScene = new Scene(dialogLayout, 340, 230);
+            depositStage.setScene(depositScene);
+            depositStage.showAndWait();
         });
 
-
-        WithdrawAccount.setOnAction(event -> {
-
+        withdrawMoneyButton.setOnAction(event -> {
             Stage withdrawStage = new Stage();
             withdrawStage.initOwner(stage);
             withdrawStage.initModality(Modality.APPLICATION_MODAL);
             withdrawStage.setTitle("Withdraw");
 
-            Text textWithdrawNumber = new Text("Withdraw from account: ");
-            TextField textFieldNumber = new TextField();
-            textFieldNumber.setPromptText("Enter number");
-            textFieldNumber.setMaxWidth(140);
+            Text accountNumberLabel = new Text("Withdraw from account:");
+            TextField accountNumberField = new TextField();
+            accountNumberField.setPromptText("Enter number");
+            accountNumberField.setMaxWidth(140);
 
+            Text amountLabel = new Text("How much do you want to withdraw?");
+            TextField amountField = new TextField();
+            amountField.setPromptText("Enter amount");
+            amountField.setMaxWidth(140);
 
-            Text textWithdrawMoney = new Text("How much do you want to withdraw?: ");
-            TextField textFieldWithdrawMoney = new TextField();
-            textFieldWithdrawMoney.setPromptText("Enter money");
-            textFieldWithdrawMoney.setMaxWidth(140);
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
 
-            Button withdrawButton = new Button("SUBMIT");
-            Button canselButton = new Button("CANSEL");
+            submitButton.setOnAction(event1 -> {
+                String accountNumberValue = accountNumberField.getText().trim();
+                String amountValue = amountField.getText().trim();
 
-
-            withdrawButton.setOnAction(event1 -> {
-
-                String accountNumber = textFieldNumber.getText().trim();
-                String accountToMoney = textFieldWithdrawMoney.getText().trim();
-
-                if (accountNumber.isEmpty() && accountToMoney.isEmpty()){
-                    showAlert(Alert.AlertType.ERROR,"Fill in end account number");
+                if (accountNumberValue.isEmpty() || amountValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
                     return;
                 }
+
                 try {
-                    int accountNumberParsed = Integer.parseInt(accountNumber);
-                    double accountNumberMoneyParsed = Double.parseDouble(accountToMoney);
+                    int accountNumber = Integer.parseInt(accountNumberValue);
+                    double amount = Double.parseDouble(amountValue);
 
-                    if (accountNumberParsed <=0 || accountNumberMoneyParsed <=0){
-                        showAlert(Alert.AlertType.ERROR,"Поля должны быть больше нуля");
+                    if (accountNumber <= 0 || amount <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number and amount must be greater than zero.");
                         return;
                     }
 
-                    BankAccounts bankAccounts = service.findAccountByNumber(accountNumberParsed);
-                    if (bankAccounts == null){
-                        showAlert(Alert.AlertType.ERROR,"Этот аккаунт не существует");
+                    BankAccounts account = service.findAccountByNumber(accountNumber);
+                    if (account == null) {
+                        showAlert(Alert.AlertType.ERROR, "This account does not exist.");
                         return;
-                    }else {
-                        if (bankAccounts.getBalance()<=0){
-                            showAlert(Alert.AlertType.ERROR,"Баланс маленький");
-                        }else {
-                            bankAccounts.withdraw(accountNumberMoneyParsed);//Вывод
-                            showAlert(Alert.AlertType.INFORMATION,"Money withdrawn!");
-                            withdrawStage.close();
-                        }
                     }
 
-                }catch (NumberFormatException ex) {
-                    showAlert(Alert.AlertType.ERROR, "Аккаунт должен содержать только цифры ");
+                    double balanceBeforeWithdraw = account.getBalance();
+                    account.withdraw(amount);
+
+                    if (Double.compare(balanceBeforeWithdraw, account.getBalance()) == 0) {
+                        showAlert(Alert.AlertType.ERROR, "Withdrawal failed.");
+                        return;
+                    }
+
+                    showAlert(Alert.AlertType.INFORMATION, "Money withdrawn.");
+                    withdrawStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number and amount must be numeric.");
                 }
-
-
             });
 
-            canselButton.setOnAction(event1 -> {
-                withdrawStage.close();
-            });
+            cancelButton.setOnAction(event1 -> withdrawStage.close());
 
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
 
-            HBox hbox = new HBox(10,withdrawButton,canselButton);
-            VBox vbox = new VBox(10,textWithdrawNumber,textFieldNumber,textWithdrawMoney,textFieldWithdrawMoney,hbox);
-            hbox.setAlignment(Pos.CENTER);
-            vbox.setAlignment(Pos.CENTER);
-            Scene withdrawScene = new Scene(vbox,340,230);
+            VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
 
+            Scene withdrawScene = new Scene(dialogLayout, 340, 230);
             withdrawStage.setScene(withdrawScene);
             withdrawStage.showAndWait();
         });
 
+        exitButton.setOnAction(event -> stage.close());
 
+        VBox rootLayout = new VBox(10);
+        rootLayout.setAlignment(Pos.CENTER);
+        rootLayout.getChildren().addAll(
+                titleText,
+                createAccountButton,
+                deleteAccountButton,
+                depositMoneyButton,
+                withdrawMoneyButton,
+                transferMoneyButton,
+                showAllAccountsButton,
+                endMonthButton,
+                actionsSeparator,
+                saveUserDataButton,
+                loadUserDataButton,
+                searchAccountButton,
+                autoSaveDataButton,
+                autoLoadDataButton,
+                footerSeparator,
+                exitButton
+        );
 
-
-
-
-
-
-
-
-
-
-        Exit.setOnAction(event -> {
-            stage.close();
-        });
-
-        VBox vbox = new VBox(10);
-        vbox.setAlignment(Pos.CENTER);
-        vbox.getChildren().addAll(BankAccountText,CreateAccount,DeleteAccount,DepositAccount,WithdrawAccount,TransferMoneyAccount,ShowAllAccounts,EndMonth,separator,SaveDataUsers,GetDataUsers,SearchAccount,AutoSaveData,AutoLoadData,separator1,Exit);
-
-        Scene scene = new Scene(vbox,400,600);
+        Scene scene = new Scene(rootLayout, 400, 600);
         stage.setTitle("BANK SYSTEM");
         stage.setScene(scene);
         stage.show();
@@ -418,26 +395,26 @@ public class BankApp extends Application  {
 
     private void updateAccountFields(
             String accountType,
-            Text firstLabel,
-            TextField firstField,
-            Text secondLabel,
-            TextField secondField
+            Text primaryFieldLabel,
+            TextField primaryField,
+            Text monthlyFeeLabel,
+            TextField monthlyFeeField
     ) {
         boolean isCreditAccount = "Credit account".equals(accountType);
 
         if (isCreditAccount) {
-            firstLabel.setText("Credit limit: ");
-            firstField.setPromptText("Enter number");
+            primaryFieldLabel.setText("Credit limit:");
+            primaryField.setPromptText("Enter number");
         } else {
-            firstLabel.setText("Deposit interest rate: ");
-            firstField.setPromptText("Enter number");
-            secondField.clear();
+            primaryFieldLabel.setText("Deposit interest rate:");
+            primaryField.setPromptText("Enter number");
+            monthlyFeeField.clear();
         }
 
-        secondLabel.setVisible(isCreditAccount);
-        secondLabel.setManaged(isCreditAccount);
-        secondField.setVisible(isCreditAccount);
-        secondField.setManaged(isCreditAccount);
+        monthlyFeeLabel.setVisible(isCreditAccount);
+        monthlyFeeLabel.setManaged(isCreditAccount);
+        monthlyFeeField.setVisible(isCreditAccount);
+        monthlyFeeField.setManaged(isCreditAccount);
     }
 
     private void showAlert(Alert.AlertType alertType, String message) {
@@ -456,9 +433,5 @@ public class BankApp extends Application  {
                 + "\nAccount number: " + account.getAccountNumber()
                 + "\nOwner: " + account.getOwnerName()
                 + "\nBalance: " + String.format("%.2f", account.getBalance());
-
     }
-
-
-
 }
