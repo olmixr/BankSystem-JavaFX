@@ -38,7 +38,9 @@ public class BankApp extends Application {
         Button searchAccountButton = new Button("Search account");
         Button autoSaveDataButton = new Button("Auto save data"); // TODO: show true/false state
         Button autoLoadDataButton = new Button("Auto load data"); // TODO: show true/false state
+        Button generateRandomAccountsButton = new Button("Generate random accounts");
         Button exitButton = new Button("Exit");
+
         Separator actionsSeparator = new Separator();
         Separator footerSeparator = new Separator();
 
@@ -117,8 +119,8 @@ public class BankApp extends Application {
                         service.createSavingsAccount(accountNumber, ownerNameValue, interestRate);
                     } else if ("Credit account".equals(accountType)) {
                         int creditLimit = Integer.parseInt(primaryValue);
-                        int fee = Integer.parseInt(monthlyFeeValue);
-                        service.createCreditAccount(accountNumber, ownerNameValue, creditLimit, fee);
+                        int monthlyFee = Integer.parseInt(monthlyFeeValue);
+                        service.createCreditAccount(accountNumber, ownerNameValue, creditLimit, monthlyFee);
                     }
 
                     showAlert(
@@ -360,6 +362,233 @@ public class BankApp extends Application {
             withdrawStage.showAndWait();
         });
 
+        transferMoneyButton.setOnAction(event -> {
+            Stage transferStage = new Stage();
+            transferStage.initOwner(stage);
+            transferStage.initModality(Modality.APPLICATION_MODAL);
+            transferStage.setTitle("Transfer");
+
+            Text fromAccountLabel = new Text("From account:");
+            TextField fromAccountField = new TextField();
+            fromAccountField.setPromptText("Enter number");
+            fromAccountField.setMaxWidth(140);
+
+            Text toAccountLabel = new Text("To account:");
+            TextField toAccountField = new TextField();
+            toAccountField.setPromptText("Enter number");
+            toAccountField.setMaxWidth(140);
+
+            Text transferAmountLabel = new Text("How much do you want to transfer?");
+            TextField transferAmountField = new TextField();
+            transferAmountField.setPromptText("Enter amount");
+            transferAmountField.setMaxWidth(140);
+
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
+
+            submitButton.setOnAction(event1 -> {
+                String fromAccountValue = fromAccountField.getText().trim();
+                String toAccountValue = toAccountField.getText().trim();
+                String amountValue = transferAmountField.getText().trim();
+
+                if (fromAccountValue.isEmpty() || toAccountValue.isEmpty() || amountValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int fromAccountNumber = Integer.parseInt(fromAccountValue);
+                    int toAccountNumber = Integer.parseInt(toAccountValue);
+                    double amount = Double.parseDouble(amountValue);
+
+                    if (fromAccountNumber <= 0 || toAccountNumber <= 0 || amount <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number and amount must be greater than zero.");
+                        return;
+                    }
+
+                    String transferMessage = service.transferFromTo(fromAccountNumber, toAccountNumber, amount);
+                    showAlert(Alert.AlertType.INFORMATION, transferMessage);
+                    transferStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number and amount must be numeric.");
+                }
+            });
+
+            cancelButton.setOnAction(event1 -> transferStage.close());
+
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
+
+            VBox dialogLayout = new VBox(
+                    10,
+                    fromAccountLabel,
+                    fromAccountField,
+                    toAccountLabel,
+                    toAccountField,
+                    transferAmountLabel,
+                    transferAmountField,
+                    buttonsBox
+            );
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene transferScene = new Scene(dialogLayout, 340, 230);
+            transferStage.setScene(transferScene);
+            transferStage.showAndWait();
+        });
+
+        showAllAccountsButton.setOnAction(event -> {
+            String allAccountInfo = service.getAllAccountInfo();
+            showAlert(Alert.AlertType.INFORMATION, allAccountInfo);
+        });
+
+        endMonthButton.setOnAction(event -> {
+            Stage endMonthStage = new Stage();
+            endMonthStage.initOwner(stage);
+            endMonthStage.initModality(Modality.APPLICATION_MODAL);
+            endMonthStage.setTitle("End of month");
+
+            Text endMonthLabel = new Text("Apply end-of-month changes?");
+
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
+
+            submitButton.setOnAction(event1 -> {
+                String monthEndMessage = service.finalMonth();
+                showAlert(Alert.AlertType.INFORMATION, monthEndMessage);
+                endMonthStage.close();
+            });
+
+            cancelButton.setOnAction(event1 -> endMonthStage.close());
+
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
+
+            VBox dialogLayout = new VBox(10, endMonthLabel, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene endMonthScene = new Scene(dialogLayout, 340, 230);
+            endMonthStage.setScene(endMonthScene);
+            endMonthStage.showAndWait();
+        });
+
+        searchAccountButton.setOnAction(event -> {
+            Stage searchStage = new Stage();
+            searchStage.initOwner(stage);
+            searchStage.initModality(Modality.APPLICATION_MODAL);
+            searchStage.setTitle("Search account");
+
+            Text accountNumberLabel = new Text("Search account number:");
+            TextField accountNumberField = new TextField();
+            accountNumberField.setPromptText("Enter number");
+            accountNumberField.setMaxWidth(140);
+
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
+
+            submitButton.setOnAction(event1 -> {
+                String accountNumberValue = accountNumberField.getText().trim();
+
+                if (accountNumberValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int accountNumber = Integer.parseInt(accountNumberValue);
+
+                    if (accountNumber <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number must be greater than zero.");
+                        return;
+                    }
+
+                    BankAccounts account = service.findAccountByNumber(accountNumber);
+                    if (account == null) {
+                        showAlert(Alert.AlertType.ERROR, "This account does not exist.");
+                        return;
+                    }
+
+                    String accountInfo = service.getAccountInfo(accountNumber);
+                    showAlert(Alert.AlertType.INFORMATION, accountInfo);
+                    searchStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number must be numeric.");
+                }
+            });
+
+            cancelButton.setOnAction(event1 -> searchStage.close());
+
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
+
+            VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene searchScene = new Scene(dialogLayout, 340, 230);
+            searchStage.setScene(searchScene);
+            searchStage.showAndWait();
+        });
+
+        saveUserDataButton.setOnAction(event -> {
+            service.saveData();
+            showAlert(Alert.AlertType.INFORMATION, "Save success!");
+        });
+
+        loadUserDataButton.setOnAction(event -> {
+            service.loadAccountsFromFile();
+            showAlert(Alert.AlertType.INFORMATION, "Load success!");
+        });
+
+        generateRandomAccountsButton.setOnAction(event -> {
+            Stage randomAccountsStage = new Stage();
+            randomAccountsStage.initOwner(stage);
+            randomAccountsStage.initModality(Modality.APPLICATION_MODAL);
+            randomAccountsStage.setTitle("Generate random accounts");
+
+            Text numberOfAccountsLabel = new Text("Number of accounts:");
+            TextField numberOfAccountsField = new TextField();
+            numberOfAccountsField.setPromptText("Enter number");
+            numberOfAccountsField.setMaxWidth(140);
+
+            Button submitButton = new Button("Submit");
+            Button cancelButton = new Button("Cancel");
+
+            submitButton.setOnAction(event1 -> {
+                String numberOfAccountsValue = numberOfAccountsField.getText().trim();
+
+                if (numberOfAccountsValue.isEmpty()) {
+                    showAlert(Alert.AlertType.ERROR, "Fill in all required fields.");
+                    return;
+                }
+
+                try {
+                    int numberOfAccounts = Integer.parseInt(numberOfAccountsValue);
+
+                    if (numberOfAccounts <= 0) {
+                        showAlert(Alert.AlertType.ERROR, "Account number and amount must be greater than zero.");
+                        return;
+                    }
+
+                    String generationMessage = service.randomAccountsGenerate(numberOfAccounts);
+                    showAlert(Alert.AlertType.INFORMATION, generationMessage);
+                    randomAccountsStage.close();
+                } catch (NumberFormatException ex) {
+                    showAlert(Alert.AlertType.ERROR, "Account number and amount must be numeric.");
+                }
+            });
+
+            cancelButton.setOnAction(event1 -> randomAccountsStage.close());
+
+            HBox buttonsBox = new HBox(10, submitButton, cancelButton);
+            buttonsBox.setAlignment(Pos.CENTER);
+
+            VBox dialogLayout = new VBox(10, numberOfAccountsLabel, numberOfAccountsField, buttonsBox);
+            dialogLayout.setAlignment(Pos.CENTER);
+
+            Scene randomAccountsScene = new Scene(dialogLayout, 340, 230);
+            randomAccountsStage.setScene(randomAccountsScene);
+            randomAccountsStage.showAndWait();
+        });
+
         exitButton.setOnAction(event -> stage.close());
 
         VBox rootLayout = new VBox(10);
@@ -379,6 +608,7 @@ public class BankApp extends Application {
                 searchAccountButton,
                 autoSaveDataButton,
                 autoLoadDataButton,
+                generateRandomAccountsButton,
                 footerSeparator,
                 exitButton
         );
