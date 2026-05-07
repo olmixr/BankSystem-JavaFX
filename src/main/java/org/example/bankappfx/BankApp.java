@@ -20,6 +20,11 @@ import java.util.Optional;
 
 public class BankApp extends Application {
 
+    private static final String BUTTON_STYLE = "-fx-background-color: #bdb5c2;";
+    private static final String WINDOW_STYLE = "-fx-background-color: #47424a; -fx-padding: 20;";
+    private static final String TEXT_STYLE = "-fx-fill: #d9d4db; -fx-padding: 20; -fx-font-weight: bold;";
+    private static final String TITLE_STYLE = TEXT_STYLE + " -fx-font-size: 18px;";
+
     private final BankService service = new BankService();
 
     @Override
@@ -91,6 +96,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("OK");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String accountType = accountTypeComboBox.getValue();
@@ -155,7 +161,14 @@ public class BankApp extends Application {
                     buttonsBox
             );
             dialogLayout.setAlignment(Pos.CENTER);
-
+            applyTextStyle(
+                    accountTypeText,
+                    accountNumberLabel,
+                    ownerNameLabel,
+                    primaryFieldLabel,
+                    monthlyFeeLabel
+            );
+            applyWindowStyle(dialogLayout);
             Scene dialogScene = new Scene(dialogLayout, 350, 320);
             createStage.setScene(dialogScene);
             createStage.showAndWait();
@@ -174,6 +187,7 @@ public class BankApp extends Application {
 
             Button deleteButton = new Button("Delete");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(deleteButton, cancelButton);
 
             deleteButton.setOnAction(event1 -> {
                 String accountNumberValue = accountNumberField.getText().trim();
@@ -221,6 +235,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(accountNumberLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene deleteScene = new Scene(dialogLayout, 340, 170);
             deleteStage.setScene(deleteScene);
@@ -245,6 +261,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String accountNumberValue = accountNumberField.getText().trim();
@@ -285,6 +302,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(accountNumberLabel, amountLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene depositScene = new Scene(dialogLayout, 340, 230);
             depositStage.setScene(depositScene);
@@ -309,6 +328,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String accountNumberValue = accountNumberField.getText().trim();
@@ -356,6 +376,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, amountLabel, amountField, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(accountNumberLabel, amountLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene withdrawScene = new Scene(dialogLayout, 340, 230);
             withdrawStage.setScene(withdrawScene);
@@ -385,6 +407,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String fromAccountValue = fromAccountField.getText().trim();
@@ -430,6 +453,8 @@ public class BankApp extends Application {
                     buttonsBox
             );
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(fromAccountLabel, toAccountLabel, transferAmountLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene transferScene = new Scene(dialogLayout, 340, 230);
             transferStage.setScene(transferScene);
@@ -451,6 +476,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String monthEndMessage = service.finalMonth();
@@ -465,6 +491,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, endMonthLabel, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(endMonthLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene endMonthScene = new Scene(dialogLayout, 340, 230);
             endMonthStage.setScene(endMonthScene);
@@ -484,6 +512,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String accountNumberValue = accountNumberField.getText().trim();
@@ -522,6 +551,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, accountNumberLabel, accountNumberField, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(accountNumberLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene searchScene = new Scene(dialogLayout, 340, 230);
             searchStage.setScene(searchScene);
@@ -551,6 +582,7 @@ public class BankApp extends Application {
 
             Button submitButton = new Button("Submit");
             Button cancelButton = new Button("Cancel");
+            applyButtonStyle(submitButton, cancelButton);
 
             submitButton.setOnAction(event1 -> {
                 String numberOfAccountsValue = numberOfAccountsField.getText().trim();
@@ -583,6 +615,8 @@ public class BankApp extends Application {
 
             VBox dialogLayout = new VBox(10, numberOfAccountsLabel, numberOfAccountsField, buttonsBox);
             dialogLayout.setAlignment(Pos.CENTER);
+            applyTextStyle(numberOfAccountsLabel);
+            applyWindowStyle(dialogLayout);
 
             Scene randomAccountsScene = new Scene(dialogLayout, 340, 230);
             randomAccountsStage.setScene(randomAccountsScene);
@@ -590,6 +624,42 @@ public class BankApp extends Application {
         });
 
         exitButton.setOnAction(event -> stage.close());
+
+        applyButtonStyle(
+                createAccountButton,
+                deleteAccountButton,
+                depositMoneyButton,
+                withdrawMoneyButton,
+                transferMoneyButton,
+                showAllAccountsButton,
+                endMonthButton,
+                saveUserDataButton,
+                loadUserDataButton,
+                searchAccountButton,
+                autoSaveDataButton,
+                autoLoadDataButton,
+                generateRandomAccountsButton,
+                exitButton
+        );
+
+        titleText.setStyle(TITLE_STYLE);
+
+        createAccountButton.setMaxWidth(140);
+        deleteAccountButton.setMaxWidth(140);
+        depositMoneyButton.setMaxWidth(140);
+        withdrawMoneyButton.setMaxWidth(140);
+        transferMoneyButton.setMaxWidth(140);
+        showAllAccountsButton.setMaxWidth(140);
+        endMonthButton.setMaxWidth(140);
+        actionsSeparator.setMaxWidth(230);
+        saveUserDataButton.setMaxWidth(140);
+        loadUserDataButton.setMaxWidth(140);
+        searchAccountButton.setMaxWidth(140);
+        autoSaveDataButton.setMaxWidth(140);
+        autoLoadDataButton.setMaxWidth(140);
+        generateRandomAccountsButton.setMaxWidth(160);
+        footerSeparator.setMaxWidth(230);
+        exitButton.setMaxWidth(140);
 
         VBox rootLayout = new VBox(10);
         rootLayout.setAlignment(Pos.CENTER);
@@ -613,7 +683,8 @@ public class BankApp extends Application {
                 exitButton
         );
 
-        Scene scene = new Scene(rootLayout, 400, 600);
+        applyWindowStyle(rootLayout);
+        Scene scene = new Scene(rootLayout, 500, 600);
         stage.setTitle("BANK SYSTEM");
         stage.setScene(scene);
         stage.show();
@@ -652,6 +723,24 @@ public class BankApp extends Application {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void applyButtonStyle(Button... buttons) {
+        for (Button button : buttons) {
+            button.setStyle(BUTTON_STYLE);
+        }
+    }
+
+    private void applyTextStyle(Text... texts) {
+        for (Text text : texts) {
+            text.setStyle(TEXT_STYLE);
+        }
+    }
+
+    private void applyWindowStyle(VBox... layouts) {
+        for (VBox layout : layouts) {
+            layout.setStyle(WINDOW_STYLE);
+        }
     }
 
     private String buildDeleteConfirmationText(BankAccounts account) {
