@@ -160,6 +160,9 @@ public class BankApp extends Application {
                     monthlyFeeField,
                     buttonsBox
             );
+
+            accountTypeComboBox.setStyle(BUTTON_STYLE);
+
             dialogLayout.setAlignment(Pos.CENTER);
             applyTextStyle(
                     accountTypeText,
